@@ -15,17 +15,17 @@ import urllib,json,urllib2
 import threading
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'e0a988c2ef03d31977f017304dbf33c7'
+app.config['SECRET_KEY'] = 'Any_secret_you_keep_to_yourself'
 socketio = SocketIO(app)
 
-CLIENT_ID='b0bfe8e2da324814ad5d2c31e4096499'
-CLIENT_SECRET='175e2fd04658459382ecd710f7750787'
+CLIENT_ID='{YOUR CLIENT ID}'
+CLIENT_SECRET='{YOUR CLIENT SECRET}'
 #APP_URL='http://localhost:8080'
 AUTH_TOKEN=''
-APP_URL='http://ec2-52-10-129-151.us-west-2.compute.amazonaws.com/'
+APP_URL='{YOUR REDIRECT URL}'
 USERS = [460563723,46983271,11830955,144605776,6860189,7719696,25025320,553762634,202329761,182393608,451573056,1259283205,3122433,144548040]
 
-ips = '52.10.129.151'
+ips = '127.0.0.1'
 
 signature = hmac.new(CLIENT_SECRET, ips, sha256).hexdigest()
 insta_header = '|'.join([ips, signature])
