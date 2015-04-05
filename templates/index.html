@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Nice People Follows</title>
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+</head>
+<body>
+<h1>Hello!</h1>
+</br>
+{% if username %}
+  <h1>Welcome {{ username }}!</h1>
+  </br>
+  <h2>Receive:</h2>
+  <div id="log"></div>
+  <script type="text/javascript" charset="utf-8">
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    socket.on('connect', function() {
+        socket.emit('message', {data: 'I\'m connected!'});
+    });
+
+    // server received data
+    socket.on('log event', function(msg) {
+                $('#log').append('<br>Received #: ' + msg.data);
+    });
+
+    // server received error
+    socket.on('error log', function(msg) {
+                $('#log').append('<br>Error #: ' + msg.code + ' ' + msg.reason);
+    });
+    
+</script>
+{% else %}
+  <h1><a href="https://api.instagram.com/oauth/authorize/?client_id={{client_id}}&redirect_uri={{redirect_uri}}&response_type=code">Log in to Instagram</a></h1>
+{% endif %}
+</body>
+</html>
