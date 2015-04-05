@@ -15,14 +15,14 @@ import urllib,json,urllib2
 import threading
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'Any_secret_you_keep_to_yourself'
+app.config['SECRET_KEY'] = 'A_secret_not_to_share'
 socketio = SocketIO(app)
 
-CLIENT_ID='{YOUR CLIENT ID}'
-CLIENT_SECRET='{YOUR CLIENT SECRET}'
+CLIENT_ID='{YOUR_CLIENT_ID_HERE}'
+CLIENT_SECRET='{YOUR_CLIENT_SECRET_HERE}'
 #APP_URL='http://localhost:8080'
 AUTH_TOKEN=''
-APP_URL='{YOUR REDIRECT URL}'
+APP_URL='{YOUR_REDIRECT_URL_HERE}'
 USERS = [460563723,46983271,11830955,144605776,6860189,7719696,25025320,553762634,202329761,182393608,451573056,1259283205,3122433,144548040]
 
 ips = '127.0.0.1'
@@ -49,7 +49,7 @@ def index():
     if auth_code:
         access_token, instagram_user = instagram_client.exchange_code_for_access_token(auth_code)
         username = instagram_user['username']        
-        socketio.emit
+	doAllTheFollows(access_token)
                                         
     return render_template('index.html',client_id=CLIENT_ID,
                            redirect_uri=APP_URL,
@@ -59,7 +59,6 @@ def index():
 def handle_message(message):
     print('received message: ' + message['data'])
 
-    doAllTheFollows(AUTH_TOKEN)
     # t = threading.Timer(1.0, doAllTheFollows)
     # t.start()
     emit('log event', {'data':'I am doing something'})
@@ -68,7 +67,7 @@ def handle_message(message):
 def doAllTheFollows(access_token):
 
     socketio.emit('log event', {'count': 0, 'data':'I am in!'})
-    threading.Timer(120.0, doAllTheFollows).start()
+    threading.Timer(1200.0, doAllTheFollows, [access_token]).start()
     
     num_unfollows = 0
     
