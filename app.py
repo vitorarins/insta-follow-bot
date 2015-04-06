@@ -13,6 +13,8 @@ import time, random
 import urllib,json,urllib2
 # from urllib3 import util
 import threading
+import logging
+logging.basicConfig(filename='follows_output.log',level=logging.DEBUG)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'A_secret_not_to_share'
@@ -58,6 +60,7 @@ def index():
 @socketio.on('message')
 def handle_message(message):
     print('received message: ' + message['data'])
+    logging.debug('received message: ' + message['data'])        
 
     # t = threading.Timer(1.0, doAllTheFollows)
     # t.start()
@@ -75,6 +78,7 @@ def doAllTheFollows(access_token):
         unfollow_log = "Unfollowing %d" % user
         socketio.emit('log event', {'data':unfollow_log})
         print unfollow_log
+        logging.debug(unfollow_log)        
         num_unfollows +=unfollow_user(user,access_token)
         # try:
         #     instagram_client.unfollow_user(user)
@@ -87,6 +91,7 @@ def doAllTheFollows(access_token):
     the_unfollow_log = "Number of users unfollowed is %d" % num_unfollows
     socketio.emit('log event', {'data':the_unfollow_log})
     print the_unfollow_log
+    logging.debug(the_unfollow_log)    
         
     time.sleep(60)
         
@@ -96,6 +101,8 @@ def doAllTheFollows(access_token):
         follow_log = "Following %d" % user
         socketio.emit('log event', {'data':follow_log})
         print follow_log
+        logging.debug(follow_log)
+        
         num_follows+= followUser(user,access_token)
         # try:            
         # except InstagramAPIError as e:
@@ -106,6 +113,7 @@ def doAllTheFollows(access_token):
     the_follow_log = "Number of users followed is %d" % num_follows
     socketio.emit('log event', {'data':the_follow_log})
     print the_follow_log
+    logging.debug(the_follow_log)    
 
 def followUser(userId,access_token):
 
@@ -117,16 +125,19 @@ def followUser(userId,access_token):
               'action' : 'follow',
               'client_id' : CLIENT_ID}
     print access_token
+    logging.debug(access_token)    
     try:
         newFollow = followUrl % (userId)
         socketio.emit('log event', {'data':newFollow})
         print newFollow
+        logging.debug(newFollow)        
         data = urllib.urlencode(values)
         req = urllib2.Request(newFollow,data,headers)
         response = urllib2.urlopen(req)
         result = response.read()
         socketio.emit('log event', {'data':result})        
         print result
+        logging.debug(result)        
         dataObj = json.loads(result);
         followed = 1
                                        
@@ -134,6 +145,7 @@ def followUser(userId,access_token):
         error_message = e.read()
         socketio.emit('error log', {'code':e.code, 'reason':error_message})
         print error_message
+        logging.error(error_message)        
         
     return followed
 
@@ -145,16 +157,19 @@ def unfollow_user(userId,access_token):
               'action' : 'unfollow',
               'client_id' : CLIENT_ID}
     print access_token
+    logging.debug(access_token)    
     try:
         noFollow = followUrl % (userId)
         socketio.emit('log event', {'data':noFollow})        
         print noFollow
+        logging.debug(noFollow)        
         data = urllib.urlencode(values)
         req = urllib2.Request(noFollow,data,headers)
         response = urllib2.urlopen(req)
         result = response.read()
         socketio.emit('log event', {'data':noFollow})                
         print result
+        logging.debug(result)        
         dataObj = json.loads(result)
         unfollowed = 1
         
@@ -162,6 +177,7 @@ def unfollow_user(userId,access_token):
         error_message = e.read()
         socketio.emit('error log', {'code':e.code, 'reason':error_message})
         print error_message
+        logging.error(error_message)        
         
     return unfollowed
     
