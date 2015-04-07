@@ -9,6 +9,7 @@ from instagram.bind import InstagramAPIError
 import hmac
 from hashlib import sha256
 
+import os
 import time, random
 import urllib,json,urllib2
 # from urllib3 import util
@@ -20,14 +21,14 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'A_secret_not_to_share'
 socketio = SocketIO(app)
 
-CLIENT_ID='{YOUR_CLIENT_ID_HERE}'
-CLIENT_SECRET='{YOUR_CLIENT_SECRET_HERE}'
+CLIENT_ID=os.environ['CLIENT_ID']
+CLIENT_SECRET=os.environ['CLIENT_SECRET']
 #APP_URL='http://localhost:8080'
 AUTH_TOKEN=''
-APP_URL='{YOUR_REDIRECT_URL_HERE}'
+APP_URL=os.environ['APP_URL']
 USERS = [460563723,46983271,11830955,144605776,6860189,7719696,25025320,553762634,202329761,182393608,451573056,1259283205,3122433,144548040]
 
-ips = '127.0.0.1'
+ips = os.environ['ALLOWED_IPS']
 
 signature = hmac.new(CLIENT_SECRET, ips, sha256).hexdigest()
 insta_header = '|'.join([ips, signature])
