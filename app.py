@@ -119,7 +119,7 @@ def followUser(userId,access_token):
 
     followed=0
     endpoint="/users/%s"
-    followUrl = "https://api.instagram.com/v1/users/%s/relationship?action=allow"
+    followUrl = "https://api.instagram.com/v1/users/%s/relationship"
 
     values = {'access_token' : access_token,
               'action' : 'follow'}
@@ -155,7 +155,7 @@ def followUser(userId,access_token):
 def unfollow_user(userId,access_token):
     unfollowed=0
     endpoint="/users/%s"
-    followUrl = "https://api.instagram.com/v1/users/%s/relationship?action=allow"
+    followUrl = "https://api.instagram.com/v1/users/%s/relationship"
 
     values = {'access_token' : access_token,
               'action' : 'unfollow'}
