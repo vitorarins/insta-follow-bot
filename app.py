@@ -19,6 +19,7 @@ logging.basicConfig(filename='follows_output.log',level=logging.DEBUG)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'A_secret_not_to_share'
+# app.debug = True
 socketio = SocketIO(app)
 
 CLIENT_ID=os.environ['CLIENT_ID']
@@ -27,8 +28,6 @@ CLIENT_SECRET=os.environ['CLIENT_SECRET']
 AUTH_TOKEN=''
 APP_URL=os.environ['APP_URL']
 USERS = [460563723,46983271,11830955,144605776,6860189,7719696,25025320,553762634,202329761,182393608,451573056,1259283205,3122433,144548040]
-
-ips = os.environ['ALLOWED_IPS']
 
 # signature = hmac.new(CLIENT_SECRET, ips, sha256).hexdigest()
 # insta_header = '|'.join([ips, signature])
@@ -118,19 +117,20 @@ def doAllTheFollows(access_token):
 def followUser(userId,access_token):
 
     followed=0
-    endpoint="/users/%s"
-    followUrl = "https://api.instagram.com/v1/users/%s/relationship"
+    endpoint="/users/%srelationship"
+    followUrl = "https://api.instagram.com/v1"
 
-    values = {'access_token' : access_token,
+    old_values = {'access_token' : access_token,
               'action' : 'follow'}
     
     print access_token
     logging.debug(access_token)    
     try:
-        newFollow = followUrl % (userId)
-        endpoint = endpoint % (userId)
-        sig = generate_sig(endpoint,values)
-        values['sig'] = sig
+        follow_endpoint = endpoint & (userId)
+        newFollow = followUrl + follow_endpoint
+        sig = generate_sig(follow_endpoint,old_values)
+        values = {'access_token' : access_token,
+                  'sig' : sig }        
         socketio.emit('log event', {'data':newFollow})
         print newFollow
         logging.debug(newFollow)        
@@ -154,19 +154,20 @@ def followUser(userId,access_token):
 
 def unfollow_user(userId,access_token):
     unfollowed=0
-    endpoint="/users/%s"
-    followUrl = "https://api.instagram.com/v1/users/%s/relationship"
+    endpoint="/users/%s/relationship"
+    followUrl = "https://api.instagram.com/v1"
 
-    values = {'access_token' : access_token,
+    old_values = {'access_token' : access_token,
               'action' : 'unfollow'}
     
     print access_token
     logging.debug(access_token)    
     try:
-        noFollow = followUrl % (userId)
-        endpoint = endpoint % (userId)
-        sig = generate_sig(endpoint,values)
-        values['sig'] = sig
+        follow_endpoint = endpoint % (userId)
+        noFollow = followUrl + follow_endpoint
+        sig = generate_sig(follow_endpoint,old_values)
+        values = {'access_token' : access_token,
+                  'sig' : sig }
         socketio.emit('log event', {'data':noFollow})        
         print noFollow
         logging.debug(noFollow)        
