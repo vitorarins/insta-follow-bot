@@ -36,8 +36,7 @@ ips = os.environ['ALLOWED_IPS']
 instagram_auth_url='https://api.instagram.com/oauth/access_token'
 user_agent = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7'
 headers = { 'User-Agent' : user_agent,
-            "Content-type": "application/x-www-form-urlencoded",
-            "X-Insta-Forwarded-For": insta_header
+            "Content-type": "application/x-www-form-urlencoded"
             }
 
 instagram_client = InstagramAPI(client_id=CLIENT_ID,
