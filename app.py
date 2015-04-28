@@ -30,8 +30,8 @@ USERS = [460563723,46983271,11830955,144605776,6860189,7719696,25025320,55376263
 
 ips = os.environ['ALLOWED_IPS']
 
-signature = hmac.new(CLIENT_SECRET, ips, sha256).hexdigest()
-insta_header = '|'.join([ips, signature])
+# signature = hmac.new(CLIENT_SECRET, ips, sha256).hexdigest()
+# insta_header = '|'.join([ips, signature])
 
 instagram_auth_url='https://api.instagram.com/oauth/access_token'
 user_agent = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7'
@@ -119,16 +119,19 @@ def doAllTheFollows(access_token):
 def followUser(userId,access_token):
 
     followed=0
-
+    endpoint="/users/%s"
     followUrl = "https://api.instagram.com/v1/users/%s/relationship?action=allow"
 
     values = {'access_token' : access_token,
-              'action' : 'follow',
-              'client_id' : CLIENT_ID}
+              'action' : 'follow'}
+    
     print access_token
     logging.debug(access_token)    
     try:
         newFollow = followUrl % (userId)
+        endpoint = endpoint % (userId)
+        sig = generate_sig(endpoint,values)
+        values['sig'] = sig
         socketio.emit('log event', {'data':newFollow})
         print newFollow
         logging.debug(newFollow)        
@@ -152,15 +155,19 @@ def followUser(userId,access_token):
 
 def unfollow_user(userId,access_token):
     unfollowed=0
+    endpoint="/users/%s"
     followUrl = "https://api.instagram.com/v1/users/%s/relationship?action=allow"
 
     values = {'access_token' : access_token,
-              'action' : 'unfollow',
-              'client_id' : CLIENT_ID}
+              'action' : 'unfollow'}
+    
     print access_token
     logging.debug(access_token)    
     try:
         noFollow = followUrl % (userId)
+        endpoint = endpoint % (userId)
+        sig = generate_sig(endpoint,values)
+        values['sig'] = sig
         socketio.emit('log event', {'data':noFollow})        
         print noFollow
         logging.debug(noFollow)        
@@ -181,6 +188,12 @@ def unfollow_user(userId,access_token):
         logging.error(error_message)        
         
     return unfollowed
-    
+
+def generate_sig(endpoint, params):
+    sig = endpoint
+    for key in sorted(params.keys()):
+        sig += '|%s=%s' % (key, params[key])
+    return hmac.new(CLIENT_SECRET, sig, sha256).hexdigest()
+
 if __name__ == '__main__':
     socketio.run(app,'0.0.0.0',80)
